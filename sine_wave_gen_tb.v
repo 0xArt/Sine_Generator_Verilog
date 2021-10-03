@@ -26,7 +26,7 @@ module sine_wave_gen_tb(
     
     reg clk = 0;
     wire signed [15:0] sine_wave;
-    reg [31:0] freq_control = 16'd50;
+    reg [31:0] phase_step = 16'd50;
     reg rst = 0;
     
     //clock gen
@@ -43,10 +43,10 @@ module sine_wave_gen_tb(
         
         //sweep up in frequency and record data to csv for further analysis
         for(i=0; i<200000; i=i+1000)begin
-            freq_control = i;
+            phase_step = i;
             repeat (100000)begin
                 @(posedge clk);
-                $fwrite(sine_wave_file,"%d,%d\n",sine_wave,freq_control);
+                $fwrite(sine_wave_file,"%d,%d\n",sine_wave,phase_step);
             end 
         end
         $fclose(sine_wave_file);
@@ -59,7 +59,7 @@ module sine_wave_gen_tb(
     sine_wave_gen_quarter sine_wave_gen_quarter_inst(
         .i_clk(clk),
         .i_rst(rst),
-        .i_phase_adder(freq_control),
+        .i_phase_step(phase_step),
         .o_gen_out(sine_wave)
     );
     
