@@ -50,7 +50,7 @@ module sine_wave_gen_quarter#(parameter ROM_DEPTH = 32768, ROM_WIDTH = 16)
     //if index[15] is set we want to read backwards
     assign reverse = index[15];
     assign invert = index[16];
-    assign lut_index = (reverse) ? ((ROM_DEPTH-1) - accumulator[29:15]) : accumulator[29:15];
+    assign lut_index = (reverse) ? ((ROM_DEPTH-1) - index[14:0]) : index[14:0];
     //if index[16] is set we want to negate the result
     assign sine_out  =  (invert) ? -rom_memory[lut_index] : rom_memory[lut_index];
    
