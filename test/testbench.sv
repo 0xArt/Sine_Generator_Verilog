@@ -23,12 +23,16 @@ module testbench;
 
 localparam  CLOCK_FREQUENCY             =   100_000_000;
 localparam  CLOCK_PERIOD                =   1e9/CLOCK_FREQUENCY;
+localparam  ROM_DEPTH                   =   32768;
+localparam  ROM_WIDTH                   =   16;
+localparam  PHASE_STEP_WIDTH            =   32;
 
-logic           clock                   = 0;
-logic           reset_n                 = 1;
-logic [31:0]    test_phase_step         = 50;
-integer         i;
-integer         sine_wave_file;
+
+logic                           clock                   = 0;
+logic                           reset_n                 = 1;
+logic [PHASE_STEP_WIDTH-1:0]    test_phase_step         = 888;
+integer                         i;
+integer                         sine_wave_file;
 
 initial begin
     clock   =   0;
@@ -64,13 +68,18 @@ initial begin
 end
 
 
-wire            sine_wave_generator_quarter_clock;
-wire            sine_wave_generator_quarter_reset_n;
-wire    [31:0]  sine_wave_generator_quarter_phase_step;
+wire                            sine_wave_generator_quarter_clock;
+wire                            sine_wave_generator_quarter_reset_n;
+wire    [PHASE_STEP_WIDTH-1:0]  sine_wave_generator_quarter_phase_step;
 
-wire    [15:0]  sine_wave_generator_quarter_generated_wave;
+wire    [ROM_WIDTH-1:0]         sine_wave_generator_quarter_generated_wave;
 
-sine_wave_generator_quarter sine_wave_generator_quarter(
+sine_wave_generator_quarter #(
+    .ROM_DEPTH          (ROM_DEPTH),
+    .ROM_WIDTH          (ROM_WIDTH),
+    .PHASE_STEP_WIDTH   (PHASE_STEP_WIDTH)
+)
+sine_wave_generator_quarter(
     .clock          (sine_wave_generator_quarter_clock),
     .reset_n        (sine_wave_generator_quarter_reset_n),
     .phase_step     (sine_wave_generator_quarter_phase_step),

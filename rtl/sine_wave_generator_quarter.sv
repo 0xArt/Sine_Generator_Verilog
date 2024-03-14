@@ -20,41 +20,41 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 module sine_wave_generator_quarter#(
-    parameter ROM_DEPTH = 32768,
-    parameter ROM_WIDTH = 16
+    parameter ROM_DEPTH         = 32768,
+    parameter ROM_WIDTH         = 16,
+    parameter PHASE_STEP_WIDTH  = 32
 )(
-    input   wire                clock,
-    input   wire                reset_n,
-    input   wire        [31:0]  phase_step,
+    input   wire                                clock,
+    input   wire                                reset_n,
+    input   wire        [PHASE_STEP_WIDTH-1:0]  phase_step,
 
-    output  reg signed  [15:0]  generated_wave
+    output  reg signed  [ROM_WIDTH:0]           generated_wave
 );
-
 
 reg signed [ROM_WIDTH-1:0] rom_memory [ROM_DEPTH-1:0];
 initial begin
     $readmemh("./test/16x32768_sine_lut_quarter.mem", rom_memory);
 end
 
-logic           [31:0]      _accumulator;
-reg             [31:0]      accumulator;
-logic           [16:0]      index;
-logic                       reverse;
-logic                       invert;
-logic           [14:0]      look_up_table_index;
-logic signed    [15:0]      _generated_wave;
+logic           [PHASE_STEP_WIDTH-1:0]          _accumulator;
+reg             [PHASE_STEP_WIDTH-1:0]          accumulator;
+logic           [$clog2(ROM_DEPTH)-1+2:0]       index;
+logic                                           reverse;
+logic                                           invert;
+logic           [$clog2(ROM_DEPTH)-1:0]         look_up_table_index;
+logic signed    [ROM_WIDTH:0]                   _generated_wave;
 
 always_comb begin
     _accumulator    = accumulator + phase_step;
-    index           = accumulator[31:15];
-    reverse         = index[15];
-    invert          = index[16];
+    index           = accumulator[PHASE_STEP_WIDTH-1:(PHASE_STEP_WIDTH-1) - ($clog2(ROM_DEPTH)-1+2)];
+    reverse         = index[$clog2(ROM_DEPTH)];
+    invert          = index[$clog2(ROM_DEPTH)+1];
 
     if (reverse) begin
-        look_up_table_index =   (ROM_DEPTH-1) - index[14:0];
+        look_up_table_index =   (ROM_DEPTH-1) - index[$clog2(ROM_DEPTH)-1:0];
     end
     else begin
-        look_up_table_index =   index[14:0];
+        look_up_table_index =   index[$clog2(ROM_DEPTH)-1:0];
     end
 
     if (invert) begin
