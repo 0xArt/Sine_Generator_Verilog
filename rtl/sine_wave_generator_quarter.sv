@@ -28,7 +28,7 @@ module sine_wave_generator_quarter#(
     input   wire                                reset_n,
     input   wire        [PHASE_STEP_WIDTH-1:0]  phase_step,
 
-    output  reg signed  [ROM_WIDTH:0]           generated_wave
+    output  reg signed  [ROM_WIDTH-1:0]         generated_wave
 );
 
 reg signed [ROM_WIDTH-1:0] rom_memory [ROM_DEPTH-1:0];
@@ -42,7 +42,7 @@ logic           [$clog2(ROM_DEPTH)-1+2:0]       index;
 logic                                           reverse;
 logic                                           invert;
 logic           [$clog2(ROM_DEPTH)-1:0]         look_up_table_index;
-logic signed    [ROM_WIDTH:0]                   _generated_wave;
+logic signed    [ROM_WIDTH-1:0]                 _generated_wave;
 
 always_comb begin
     _accumulator    = accumulator + phase_step;
