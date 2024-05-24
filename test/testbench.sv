@@ -18,7 +18,6 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-
 module testbench;
 
 localparam  CLOCK_FREQUENCY             =   100_000_000;
@@ -60,7 +59,7 @@ initial begin
 
         repeat (100000)begin
             @(posedge clock);
-            $fwrite(sine_wave_file,"%d,%d\n", sine_wave_generator_quarter_generated_wave, test_phase_step);
+            $fwrite(sine_wave_file,"%t,%d,%d\n", $realtime,sine_wave_generator_quarter_generated_wave, test_phase_step);
         end 
     end
     $fclose(sine_wave_file);
@@ -70,9 +69,11 @@ end
 
 wire                            sine_wave_generator_quarter_clock;
 wire                            sine_wave_generator_quarter_reset_n;
+wire                            sine_wave_generator_enable;
 wire    [PHASE_STEP_WIDTH-1:0]  sine_wave_generator_quarter_phase_step;
 
 wire    [ROM_WIDTH-1:0]         sine_wave_generator_quarter_generated_wave;
+wire                            sine_wave_generator_generated_wave_valid;
 
 sine_wave_generator_quarter #(
     .ROM_DEPTH          (ROM_DEPTH),
@@ -80,15 +81,19 @@ sine_wave_generator_quarter #(
     .PHASE_STEP_WIDTH   (PHASE_STEP_WIDTH)
 )
 sine_wave_generator_quarter(
-    .clock          (sine_wave_generator_quarter_clock),
-    .reset_n        (sine_wave_generator_quarter_reset_n),
-    .phase_step     (sine_wave_generator_quarter_phase_step),
+    .clock                  (sine_wave_generator_quarter_clock),
+    .reset_n                (sine_wave_generator_quarter_reset_n),
+    .enable                 (sine_wave_generator_enable),
+    .phase_step             (sine_wave_generator_quarter_phase_step),
 
-    .generated_wave (sine_wave_generator_quarter_generated_wave)
+    .generated_wave         (sine_wave_generator_quarter_generated_wave),
+    .generated_wave_valid   (sine_wave_generator_generated_wave_valid)
 );
+
 
 assign sine_wave_generator_quarter_clock        = clock;
 assign sine_wave_generator_quarter_reset_n      = reset_n;
+assign sine_wave_generator_enable               = 1;
 assign sine_wave_generator_quarter_phase_step   = test_phase_step;
 
 
